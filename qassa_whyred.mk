@@ -29,7 +29,7 @@ $(call inherit-product, vendor/MiuiCamera/config.mk)
 PRODUCT_DEVICE := whyred
 PRODUCT_NAME := qassa_whyred
 PRODUCT_BRAND := xiaomi
-PRODUCT_MODEL := Redmi Note 5
+PRODUCT_MODEL := Redmi Note 5/Pro
 PRODUCT_MANUFACTURER := Xiaomi
 
 PRODUCT_GMS_CLIENTID_BASE := android-xiaomi
