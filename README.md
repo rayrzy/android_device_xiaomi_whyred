@@ -19,7 +19,7 @@ The Redmi Note 5 Pro (codenamed _"whyred"_) are high-end mid-range smartphones f
 
 ## Device picture
 
-![Xiaomi Redmi Note 5 Pro](https://www1-lw.xda-cdn.com/files/2018/02/Xiaomi-Redmi-Note-5-and-Redmi-Note-5-Pro-Forums-now-Open.png)
+![Xiaomi Redmi Note 5 Pro](https://fdn2.gsmarena.com/vv/pics/xiaomi/xiaomi-redmi-note-5-ai-dual-camera-1.jpg)
 
 ## Copyright
 
