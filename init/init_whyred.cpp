@@ -25,68 +25,55 @@
    IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-#include <cstdlib>
-#include <fstream>
+#include <android-base/file.h>
+#include <android-base/properties.h>
+#include <android-base/strings.h>
 #include <string.h>
 #include <sys/sysinfo.h>
 #include <unistd.h>
 
-#include <android-base/file.h>
-#include <android-base/properties.h>
-#include <android-base/strings.h>
+#include <cstdlib>
+#include <fstream>
 #define _REALLY_INCLUDE_SYS__SYSTEM_PROPERTIES_H_
 #include <sys/_system_properties.h>
 
-#include "vendor_init.h"
 #include "property_service.h"
+#include "vendor_init.h"
 
 using android::base::GetProperty;
+using android::base::ToUpper;
 using android::init::property_set;
-using android::base::ReadFileToString;
-using android::base::Trim;
 
-char const *heapstartsize;
-char const *heapgrowthlimit;
-char const *heapsize;
-char const *heapminfree;
-char const *heapmaxfree;
-
-void property_override(char const prop[], char const value[])
-{
-    prop_info *pi;
-
-    pi = (prop_info*) __system_property_find(prop);
-    if (pi)
-        __system_property_update(pi, value, strlen(value));
-    else
-        __system_property_add(prop, strlen(prop), value, strlen(value));
+void property_override(char const prop[], char const value[]) {
+  prop_info *pi = (prop_info *)__system_property_find(prop);
+  if (pi)
+    __system_property_update(pi, value, strlen(value));
+  else
+    __system_property_add(prop, strlen(prop), value, strlen(value));
 }
 
 void property_override_dual(char const system_prop[],
-        char const vendor_prop[], char const value[])
-{
-    property_override(system_prop, value);
-    property_override(vendor_prop, value);
+                            char const vendor_prop[],
+                            char const value[]) {
+  property_override(system_prop, value);
+  property_override(vendor_prop, value);
 }
 
-void vendor_load_properties()
-{
-   std::string product = GetProperty("ro.product.vendor.device", "");	
-   if (product.find("whyred") != std::string::npos)
-   {
-  	std::string region = GetProperty("ro.boot.hwc", "");
+void vendor_load_properties() {
+  std::string product = GetProperty("ro.product.vendor.device", "");
+  if (product.find("whyred") == std::string::npos) return;
 
-    if (region.find("CN") != std::string::npos || region.find("Global") != std::string::npos || region.find("GLOBAL") != std::string::npos)
-	{
-        property_override_dual("ro.product.model", "ro.vendor.product.model", "Redmi Note 5");
-        property_override_dual("ro.product.odm.model", "ro.product.system.model", "Redmi Note 5");
-        property_override_dual("ro.product.vendor.model", "persist.vendor.camera.exif.model", "Redmi Note 5");
-	}
-	else
-	{
-        property_override_dual("ro.product.model", "ro.vendor.product.model", "Redmi Note 5 Pro");
-        property_override_dual("ro.product.odm.model", "ro.product.system.model", "Redmi Note 5 Pro");
-        property_override_dual("ro.product.vendor.model", "persist.vendor.camera.exif.model", "Redmi Note 5 Pro");
-	}
+  std::string region = ToUpper(GetProperty("ro.boot.hwc", ""));
+
+  if (region.find("CN") != std::string::npos || region.find("GLOBAL") != std::string::npos) {
+    // CN and GLOBAL region = Redmi Note 5
+    property_override_dual("ro.product.model", "ro.vendor.product.model", "Redmi Note 5");
+    property_override_dual("ro.product.odm.model", "ro.product.system.model", "Redmi Note 5");
+    property_override_dual("ro.product.vendor.model", "persist.vendor.camera.exif.model", "Redmi Note 5");
+  } else {
+    // Default (e.g. India) = Redmi Note 5 Pro
+    property_override_dual("ro.product.model", "ro.vendor.product.model", "Redmi Note 5 Pro");
+    property_override_dual("ro.product.odm.model", "ro.product.system.model", "Redmi Note 5 Pro");
+    property_override_dual("ro.product.vendor.model", "persist.vendor.camera.exif.model", "Redmi Note 5 Pro");
   }
 }
